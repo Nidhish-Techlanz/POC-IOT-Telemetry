@@ -6,6 +6,7 @@ import EmergencyAlert from "./EmergencyAlert";
 // import EmergencySensorsCard from "./EmergencySensorsCard";
 import EnvironmentalSensorsCard from "./EnvironmentalSensorsCard";
 import BMSFaultCard from "./BMSFaultCard"
+import CarCrashDetector from "./CarCrashDetector"
 // import ManualSwitchesCard from "./ManualSwitchesCard";
 
 import { useEffect, useRef, useState } from "react";
@@ -59,6 +60,7 @@ const [alcohol, setAlcohol] = useState(0); // ppm
   const [frontTyreStatus,setFrontTyreStatus] = useState(null)
   const [rearTyreStatus,setRearTyreStatus] = useState(null)
   const [isSmokeDetected,setIsSmokeDetected] = useState(0)
+  const [isCrash,setIsCrash] = useState(false)
  const [latitude,setLatitude] = useState(0)
   const [longitude,setLongitude] = useState(0)
   const [currentData, setCurrentData] = useState(() => {
@@ -221,6 +223,7 @@ useEffect(() => {
       
       // console.log(payload["manual.can.10"]);
       setIsSmokeDetected(payload["din.1"])
+      setIsCrash(payload["manual.can.14"] == 0 ? false : true)
       setFrontTyreStatus((prev)=>({...prev,psi : payload["manual.can.8"],temperature : payload["manual.can.9"]}))
       setRearTyreStatus((prev)=>({...prev,psi : payload["manual.can.10"],temperature : payload["manual.can.11"]}))
 
@@ -318,6 +321,7 @@ useEffect(() => {
     <div className="my-12">
     <SmokeDetector isSmokeDetected={isSmokeDetected}/>
     </div>
+    <CarCrashDetector isCrashed={isCrash}/>
     <div className="my-12">
       <BMSFaultCard fault={fault}/>
     </div>
