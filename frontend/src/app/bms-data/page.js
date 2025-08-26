@@ -51,7 +51,7 @@ const mapping = {
           payload = JSON.parse(payload);
         }
 
-        console.log(payload);
+        // console.log(payload);
         
 
         // Calculate values from mapping
@@ -84,7 +84,7 @@ const mapping = {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-2xl font-bold mb-4">Battery & Sensor Data</h1>
+      <h1 className="text-2xl font-bold mb-4">BMS Data</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
       {Object.entries(sensorValues).map(([name, value]) => (
   <div

@@ -1,55 +1,69 @@
-    "use client";
+"use client";
 
-    import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
-    export default function BMSFaultCard({fault}) {
-        
-    const [bmsFaults, setBmsFaults] = useState("--");
+export default function BMSFaultCard({ fault }) {
+  const [bmsFaults, setBmsFaults] = useState([]);
 
-    function decodeBmsFaults(rawValue) {
-        const rules = [
-        { name: "Single_Cell_Overvoltage", mask: 3, divisor: 1 },
-        { name: "Single_Cell_Undervoltage", mask: 12, divisor: 4 },
-        { name: "High_Cell_Voltage_Difference", mask: 768, divisor: 256 },
-        { name: "Discharge_Overcurrent", mask: 3072, divisor: 1024 },
-        { name: "Charge_Overcurrent", mask: 12288, divisor: 4096 },
-        { name: "Over_temperature", mask: 49152, divisor: 16384 },
-        { name: "Under_temperature", mask: 196608, divisor: 65536 },
-        { name: "Low_SOC", mask: 3145728, divisor: 1048576 },
-        { name: "Internal_Comm_Fault", mask: 805306368, divisor: 268435456 },
-        ];
+  function decodeBmsFaults(rawValue) {
+    const rules = [
+      { name: "Single Cell Overvoltage", mask: 3, divisor: 1 },
+      { name: "Single Cell Undervoltage", mask: 12, divisor: 4 },
+      { name: "High Cell Voltage Difference", mask: 768, divisor: 256 },
+      { name: "Discharge Overcurrent", mask: 3072, divisor: 1024 },
+      { name: "Charge Overcurrent", mask: 12288, divisor: 4096 },
+      { name: "Over Temperature", mask: 49152, divisor: 16384 },
+      { name: "Under Temperature", mask: 196608, divisor: 65536 },
+      { name: "Low SOC", mask: 3145728, divisor: 1048576 },
+      { name: "Internal Comm Fault", mask: 805306368, divisor: 268435456 },
+    ];
 
-        let active = [];
-        rules.forEach((rule) => {
-        const level = (rawValue & rule.mask) / rule.divisor;
-        if (level > 0) {
-            active.push(`${rule.name} (L${level})`);
-        }
-        });
+    let active = [];
+    rules.forEach((rule) => {
+      const level = (rawValue & rule.mask) / rule.divisor;
+      if (level > 0) {
+        active.push({ name: rule.name, level });
+      }
+    });
 
-        return active.length > 0 ? active.join(", ") : "✅ No Active Faults";
+    return active;
+  }
+
+  useEffect(() => {
+    if (fault !== undefined && !isNaN(fault)) {
+      setBmsFaults(decodeBmsFaults(Number(fault)));
+    } else {
+      setBmsFaults([]);
     }
+  }, [fault]);
 
-    useEffect(() => {
-        
-            const bmsRaw = fault
-            if (bmsRaw !== undefined && !isNaN(bmsRaw)) {
-            setBmsFaults(decodeBmsFaults(Number(bmsRaw)));
-            } else {
-            setBmsFaults("--");
-            }
-    }, [fault]);
+  return (
+    <div className="bg-gray-800/70 backdrop-blur-md border border-gray-700 rounded-2xl p-6">
+      <h3 className="text-xl font-semibold text-white mb-4 flex items-center space-x-2">
+        <AlertTriangle className="w-5 h-5 text-yellow-400" />
+        <span>BMS Faults</span>
+      </h3>
 
-    
-
-    return (
-    <div className="bg-gray-800/70 backdrop-blur-md border  border-gray-700 rounded-2xl p-6 ">
-                <h3 className="text-xl font-semibold text-white mb-2">BMS Faults</h3>
-        <div className="text-[#007acc] text-sm font-medium break-words">
-            {bmsFaults}
+      {bmsFaults.length > 0 ? (
+        <div className="space-y-2">
+          {bmsFaults.map((fault, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between bg-red-500/10 border border-red-500/30 
+                         text-red-400 px-3 py-2 rounded-lg text-sm"
+            >
+              <span>{fault.name}</span>
+              <span className="text-xs font-semibold">Level {fault.level}</span>
+            </div>
+          ))}
         </div>
+      ) : (
+        <div className="flex items-center justify-center text-green-400 text-sm bg-green-500/10 border border-green-500/30 rounded-lg py-3">
+          <CheckCircle className="w-5 h-5 mr-2" />
+          ✅ No Active Faults
         </div>
-    );
-    }
-
-
+      )}
+    </div>
+  );
+}

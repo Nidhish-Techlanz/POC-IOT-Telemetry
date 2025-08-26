@@ -3,18 +3,16 @@ const mqtt = require('mqtt');
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// Serve HTML UI
-app.use(express.static('public'));
-
 // MQTT credentials (replace these with your own)
-const FLESPI_TOKEN = 'epK9D0CUqrd8OSUWtS35EYA0qMsZAptzl2V0BNwxp3c05dqac4I7gNeJAL1D57Vc'; 
-const FLESPI_BROKER = 'mqtt.flespi.io';
-const FLESPI_TOPIC = 'flespi/message/gw/devices/6755546';
+const FLESPI_TOKEN = process.env.FLESPI_TOKEN;
+const FLESPI_BROKER = process.env.FLESPI_BROKER;
+const FLESPI_TOPIC = process.env.FLESPI_TOPIC;
 
 // Connect to Flespi MQTT broker
 const mqttClient = mqtt.connect(`mqtts://${FLESPI_BROKER}`, {

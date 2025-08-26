@@ -7,6 +7,7 @@ import EmergencyAlert from "./EmergencyAlert";
 import EnvironmentalSensorsCard from "./EnvironmentalSensorsCard";
 import BMSFaultCard from "./BMSFaultCard"
 import CarCrashDetector from "./CarCrashDetector"
+import BmsDataCardRoute from "./BmsDataCardRoute"
 // import ManualSwitchesCard from "./ManualSwitchesCard";
 
 import { useEffect, useRef, useState } from "react";
@@ -55,14 +56,15 @@ const [emergencySwitches,setEmergencySwitches] = useState([
   const plotRef1 = useRef(null); // for Graph 1 (Noise, CO2, Temp)
 const plotRef2 = useRef(null); // for Graph 2 (VOC, Humidity, Emergency)
 const [alcohol, setAlcohol] = useState(0); // ppm
-
+const [loading,setLoading] = useState(false)
   const uplotInstance = useRef(null);
   const [frontTyreStatus,setFrontTyreStatus] = useState(null)
   const [rearTyreStatus,setRearTyreStatus] = useState(null)
   const [isSmokeDetected,setIsSmokeDetected] = useState(0)
   const [isCrash,setIsCrash] = useState(false)
- const [latitude,setLatitude] = useState(0)
-  const [longitude,setLongitude] = useState(0)
+ const [latitude,setLatitude] = useState(13.069361)
+  const [longitude,setLongitude] = useState(77.617028)
+   const [isClient, setIsClient] = useState(false);
   const [currentData, setCurrentData] = useState(() => {
     const time = [];
     const series = Array.from({ length: SENSOR_COUNT }, () => []);
@@ -79,6 +81,7 @@ const [alcohol, setAlcohol] = useState(0); // ppm
    pm10 : latestValues[6]
   };
   const [fault,setFault] = useState(null)
+
   
 
  // Init uPlot for Graph 1
@@ -185,10 +188,12 @@ useEffect(() => {
   return () => u.destroy();
 }, []);
 
+  
+
 
 useEffect(() => {
   const ws = new WebSocket("ws://localhost:8000");
-  
+  setLoading(true)
   ws.onmessage = function (event) {
     try {
       const data = JSON.parse(event.data);
@@ -265,23 +270,40 @@ useEffect(() => {
       });
 
       setLatestValues(newVals);
+      setLoading(false)
     } catch (error) {
-      console.error("WebSocket parse error:", error);
+      // console.error("WebSocket parse error:", error);
     }
   };
 
   ws.onerror = (err) => {
-    console.error("WebSocket error:", err);
+    // console.error("WebSocket error:", err);
   };
 
   ws.onclose = () => {
-    console.warn("WebSocket closed");
+    // console.warn("WebSocket closed");
   };
 
   return () => {
     ws.close();
   };
 }, []);
+
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent border-white"></div>
+        <span className="ml-4">Loading dashboard...</span>
+      </div>
+    );
+  }
+
+// if(loading) return <div></div>
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -324,6 +346,9 @@ useEffect(() => {
     <CarCrashDetector isCrashed={isCrash}/>
     <div className="my-12">
       <BMSFaultCard fault={fault}/>
+    </div>
+    <div>
+      <BmsDataCardRoute/>
     </div>
     <Map latitude={latitude} longitude={longitude}/>
         </main>
