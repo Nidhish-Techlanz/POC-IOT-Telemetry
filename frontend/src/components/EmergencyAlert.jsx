@@ -1,4 +1,9 @@
+"use client";
+import { useEffect, useRef } from "react";
+
 export default function EmergencyAlert({ emergencySwitches }) {
+  const audioRef = useRef(null);
+
   const getStatusColor = (status) => {
     switch (status) {
       case "ON": return "bg-red-500";
@@ -7,8 +12,21 @@ export default function EmergencyAlert({ emergencySwitches }) {
     }
   };
 
+  // Play sound if any switch is ON
+  useEffect(() => {
+    if (!emergencySwitches) return;
+
+    const anyOn = emergencySwitches.some((sw) => sw.status === "ON");
+    if (anyOn && audioRef.current) {
+      audioRef.current.play().catch(() => {});
+    }
+  }, [emergencySwitches]);
+
   return (
-    <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border-l-4 border-red-500 mt-4 p-4 rounded-r-lg bg-gray-800/70 backdrop-blur-md border border-gray-700">
+    <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border-l-4 mt-4 p-4 rounded-r-lg bg-gray-800/70 backdrop-blur-md border border-gray-700">
+      {/* 🔔 Sound file (place alert.mp3 in /public folder) */}
+      <audio ref={audioRef} src="/alert.mp3" preload="auto" />
+
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-pulse">

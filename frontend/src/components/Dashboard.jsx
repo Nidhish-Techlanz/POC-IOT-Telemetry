@@ -17,6 +17,8 @@ import NoiseGauge from "./NoiseGauge";
 import TyreStatus from "./TyreStatus";
 import SmokeDetector from "./SmokeDetector";
 import Map from "./Map";
+import AccelerometerCard from "./AccelerometerCard"
+import Sidebar from "./Sidebar"
 
 export default function Dashboard() {
 
@@ -60,10 +62,11 @@ const [loading,setLoading] = useState(false)
   const uplotInstance = useRef(null);
   const [frontTyreStatus,setFrontTyreStatus] = useState(null)
   const [rearTyreStatus,setRearTyreStatus] = useState(null)
-  const [isSmokeDetected,setIsSmokeDetected] = useState(0)
+  const [isSmokeDetected,setIsSmokeDetected] = useState(null)
   const [isCrash,setIsCrash] = useState(false)
  const [latitude,setLatitude] = useState(13.069361)
   const [longitude,setLongitude] = useState(77.617028)
+  const [accel,setAccel] = useState(null)
    const [isClient, setIsClient] = useState(false);
   const [currentData, setCurrentData] = useState(() => {
     const time = [];
@@ -243,6 +246,12 @@ useEffect(() => {
         
       setLatitude(payload["position.latitude"])
       setLongitude(payload["position.longitude"])
+      setAccel((prev) => ({
+  ...prev,
+  x: payload["x.acceleration"],
+  y: payload["y.acceleration"],
+  z: payload["z.acceleration"],
+}));
       setCurrentData((prevData) => {
         const prevTimes = prevData[0];
         const prevSeries = prevData.slice(1);
@@ -290,23 +299,29 @@ useEffect(() => {
 }, []);
 
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
-  if (!isClient) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent border-white"></div>
-        <span className="ml-4">Loading dashboard...</span>
-      </div>
-    );
-  }
+
+  // useEffect(() => {
+  //   setIsClient(true);
+  // }, []);
+
+  // if (!isClient) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent border-white"></div>
+  //       <span className="ml-4">Loading dashboard...</span>
+  //     </div>
+  //   );
+  // }
 
 // if(loading) return <div></div>
 
+
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="flex">
+    <Sidebar/>
+    <div className="min-h-screen bg-gray-900 flex-1 text-white">
       <DashboardHeader sensorData={sensorData} />
       
       <div className="max-w-7xl mx-auto px-6">
@@ -341,6 +356,9 @@ useEffect(() => {
       />
     </div>
     <div className="my-12">
+      <AccelerometerCard accel={accel}/>
+    </div>
+    <div className="my-12">
     <SmokeDetector isSmokeDetected={isSmokeDetected}/>
     </div>
     <CarCrashDetector isCrashed={isCrash}/>
@@ -353,6 +371,7 @@ useEffect(() => {
     <Map latitude={latitude} longitude={longitude}/>
         </main>
       </div>
+    </div>
     </div>
   );
 }

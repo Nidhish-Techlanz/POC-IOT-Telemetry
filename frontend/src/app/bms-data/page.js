@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 function Misc() {
   const [sensorValues, setSensorValues] = useState({});
-
+  const [loading,setLoading] = useState(false)
   // Mapping table from your Excel
 const mapping = {
   BattVolt: { key: "manual.can.15", factor: 0.1, offset: 0, unit: "V" },
@@ -40,6 +40,7 @@ const mapping = {
 };
 
   useEffect(() => {
+    setLoading(true)
     const ws = new WebSocket("ws://localhost:8000");
 
     ws.onmessage = function (event) {
@@ -64,23 +65,33 @@ const mapping = {
         });
 
         setSensorValues(calculated);
+        setLoading(false)
       } catch (error) {
-        console.error("WebSocket parse error:", error);
+        // console.error("WebSocket parse error:", error);
       }
     };
 
     ws.onerror = (err) => {
-      console.error("WebSocket error:", err);
+      // console.error("WebSocket error:", err);
     };
 
     ws.onclose = () => {
-      console.warn("WebSocket closed");
+      // console.warn("WebSocket closed");
     };
 
     return () => {
       ws.close();
     };
   }, []);
+
+    if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-transparent border-white"></div>
+        <span className="ml-4">Loading ...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">

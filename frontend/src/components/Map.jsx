@@ -66,6 +66,8 @@ function Map({ latitude, longitude }) {
     markerInstance.current.setPosition(location);
   }, [latitude, longitude]);
 
+  
+
   return (
     <div className="min-h-screen my-12 text-white">
       <h1 className="text-3xl font-bold mb-6">Geolocation Sensor</h1>
@@ -79,6 +81,22 @@ function Map({ latitude, longitude }) {
             borderRadius: "12px",
           }}
         />
+
+        {/* Coordinates Card */}
+        <div className="mt-6 grid grid-cols-2 gap-4 text-center">
+          <div className="bg-gray-900/60 p-4 rounded-xl border border-gray-700">
+            <p className="text-sm text-gray-400">Latitude</p>
+            <p className="text-xl font-bold text-[#51cf66]">
+              {isFinite(Number(latitude)) ? Number(latitude).toFixed(6) : "13.069361"}
+            </p>
+          </div>
+          <div className="bg-gray-900/60 p-4 rounded-xl border border-gray-700">
+            <p className="text-sm text-gray-400">Longitude</p>
+            <p className="text-xl font-bold text-[#339af0]">
+              {isFinite(Number(longitude)) ? Number(longitude).toFixed(6) : "77.617028"}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
