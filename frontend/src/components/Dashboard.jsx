@@ -3,13 +3,10 @@ import AirQualitySensorsCard from "./AirQualityCard";
 import AlcoholGauge from "./AlcoholGauge";
 import DashboardHeader from "./DashboardHeader";
 import EmergencyAlert from "./EmergencyAlert";
-// import EmergencySensorsCard from "./EmergencySensorsCard";
 import EnvironmentalSensorsCard from "./EnvironmentalSensorsCard";
 import BMSFaultCard from "./BMSFaultCard"
 import CarCrashDetector from "./CarCrashDetector"
-import BmsDataCardRoute from "./BmsDataCardRoute"
-import Obd2DataCardRoute from "./Obd2DataCardRoute"
-// import ManualSwitchesCard from "./ManualSwitchesCard";
+import Obd2DataCard from "./Obd2DataCard"
 
 import { useEffect, useRef, useState } from "react";
 import uPlot from "uplot";
@@ -19,27 +16,13 @@ import TyreStatus from "./TyreStatus";
 import SmokeDetector from "./SmokeDetector";
 import Map from "./Map";
 import AccelerometerCard from "./AccelerometerCard"
-import Sidebar from "./Sidebar"
 
 export default function Dashboard() {
-
-
-//   const manualSwitches = [
-//     { id: 1, switchNumber: 1, isOn: true },
-//     { id: 2, switchNumber: 2, isOn: false },
-//     { id: 3, switchNumber: 3, isOn: true },
-//     { id: 4, switchNumber: 4, isOn: false },
-//     { id: 5, switchNumber: 5, isOn: true },
-//     { id: 6, switchNumber: 6, isOn: false },
-//     { id: 7, switchNumber: 7, isOn: true },
-//     { id: 8, switchNumber: 8, isOn: false },
-//     { id: 9, switchNumber: 9, isOn: true }
-//   ];
 const [emergencySwitches,setEmergencySwitches] = useState([
     // { id: 1, switchNumber: 1, status: "" },
     // { id: 2, switchNumber: 2, status: "" },
     // { id: 3, switchNumber: 3, status: "" },
-    { id: 4, switchNumber: 4, status: "" }
+    { id: 4, switchNumber: 4, status: null }
   ])
 
   const SENSOR_INFO = [
@@ -58,23 +41,19 @@ const [emergencySwitches,setEmergencySwitches] = useState([
 //   const plotRef = useRef(null);
   const plotRef1 = useRef(null); // for Graph 1 (Noise, CO2, Temp)
 const plotRef2 = useRef(null); // for Graph 2 (VOC, Humidity, Emergency)
-const [alcohol, setAlcohol] = useState(0); // ppm
-const [loading,setLoading] = useState(false)
+const [alcohol, setAlcohol] = useState(null); // ppm
+// const [loading,setLoading] = useState(false)
   const uplotInstance = useRef(null);
   const [frontTyreStatus,setFrontTyreStatus] = useState(null)
   const [rearTyreStatus,setRearTyreStatus] = useState(null)
   const [isSmokeDetected,setIsSmokeDetected] = useState(null)
-  const [isCrash,setIsCrash] = useState(false)
- const [latitude,setLatitude] = useState(13.069361)
-  const [longitude,setLongitude] = useState(77.617028)
+  const [isCrash,setIsCrash] = useState(null)
+ const [latitude,setLatitude] = useState(null)
+  const [longitude,setLongitude] = useState(null)
   const [accel,setAccel] = useState(null)
-   const [isClient, setIsClient] = useState(false);
-  const [currentData, setCurrentData] = useState(() => {
-    const time = [];
-    const series = Array.from({ length: SENSOR_COUNT }, () => []);
-    return [time, ...series];
-  });
-  const [latestValues, setLatestValues] = useState(Array(SENSOR_COUNT).fill(0));
+  const [isConnected,setIsConnected] = useState(false)
+  
+  const [latestValues, setLatestValues] = useState(Array(SENSOR_COUNT).fill(null));
     const sensorData = {
  noise: latestValues[0],
   co2: latestValues[1],
@@ -85,7 +64,7 @@ const [loading,setLoading] = useState(false)
    pm10 : latestValues[6]
   };
   const [fault,setFault] = useState(null)
-
+  const [obd,setObd] = useState(null)
   
 
  // Init uPlot for Graph 1
@@ -197,7 +176,11 @@ useEffect(() => {
 
 useEffect(() => {
   const ws = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_SERVER);
-  setLoading(true)
+  // setLoading(true)
+   ws.onopen = () => {
+      console.log("✅ WebSocket connected");
+      setIsConnected(true);
+    };
   ws.onmessage = function (event) {
     try {
       const data = JSON.parse(event.data);
@@ -208,9 +191,8 @@ useEffect(() => {
       }
 
       // console.log(payload);
-      
+      setObd(payload);
       const ts = payload["server.timestamp"] || payload["timestamp"] || Date.now() / 1000;
-      const newT = ts;
      setEmergencySwitches([
   // { id: 1, switchNumber: 1, status: payload["din"] ? "ON" : "OFF" },
   // { id: 2, switchNumber: 2, status: payload["din.1"] ? "ON" : "OFF" },
@@ -253,34 +235,8 @@ useEffect(() => {
   y: payload["y.acceleration"],
   z: payload["z.acceleration"],
 }));
-      setCurrentData((prevData) => {
-        const prevTimes = prevData[0];
-        const prevSeries = prevData.slice(1);
-
-        const updatedTimes = [...prevTimes, newT].slice(-300);
-        const updatedSeries = prevSeries.map((seriesArr, i) =>
-          [...seriesArr, newVals[i]].slice(-300)
-        );
-
-        const updatedData = [updatedTimes, ...updatedSeries];
-
-        // Update graph 1 (Sensors 1–3)
-        if (uplotInstance.current?.graph1) {
-          const dataGraph1 = [updatedTimes, ...updatedSeries.slice(0, 3)];
-          uplotInstance.current.graph1.setData(dataGraph1);
-        }
-
-        // Update graph 2 (Sensors 4–6)
-        if (uplotInstance.current?.graph2) {
-          const dataGraph2 = [updatedTimes, ...updatedSeries.slice(3)];
-          uplotInstance.current.graph2.setData(dataGraph2);
-        }
-
-        return updatedData;
-      });
-
       setLatestValues(newVals);
-      setLoading(false)
+      // setLoading(false)
     } catch (error) {
       // console.error("WebSocket parse error:", error);
     }
@@ -288,9 +244,13 @@ useEffect(() => {
 
   ws.onerror = (err) => {
     // console.error("WebSocket error:", err);
+    console.log("⚠️ WebSocket error:", err);
+    setIsConnected(false)
   };
 
   ws.onclose = () => {
+    setIsConnected(false)
+     console.log("❌ WebSocket closed");
     // console.warn("WebSocket closed");
   };
 
@@ -320,9 +280,7 @@ useEffect(() => {
 
 
   return (
-    <div className="flex">
-    <Sidebar/>
-    <div className="min-h-screen bg-gray-900 flex-1 text-white">
+    <div className="min-h-screen pl-64 bg-gray-900 flex-1 text-white">
       <DashboardHeader sensorData={sensorData} />
       
       <div className="max-w-7xl mx-auto px-6">
@@ -338,7 +296,7 @@ useEffect(() => {
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6">
       <AlcoholGauge 
-        value={alcohol/100} 
+        value={alcohol} 
         max={100} 
         label="Alcohol Detector" 
         unit="ppm" 
@@ -362,20 +320,19 @@ useEffect(() => {
     <div className="my-12">
     <SmokeDetector isSmokeDetected={isSmokeDetected}/>
     </div>
-    <CarCrashDetector isCrashed={isCrash}/>
+    <CarCrashDetector isCrashed={isCrash} />
     <div className="my-12">
       <BMSFaultCard fault={fault}/>
     </div>
-    <div>
+    {/* <div>
       <BmsDataCardRoute/>
-    </div>
+    </div> */}
     <div>
-      <Obd2DataCardRoute/>
+      <Obd2DataCard obd={obd}/>
     </div>
     <Map latitude={latitude} longitude={longitude}/>
         </main>
       </div>
-    </div>
     </div>
   );
 }

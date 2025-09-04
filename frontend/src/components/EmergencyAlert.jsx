@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 
 export default function EmergencyAlert({ emergencySwitches }) {
+  
   const audioRef = useRef(null);
 
   const getStatusColor = (status) => {
@@ -41,6 +42,10 @@ export default function EmergencyAlert({ emergencySwitches }) {
             </p>
           </div>
         </div>
+        {
+          emergencySwitches[0].status == null ?  <div className="px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-gray-400">
+            Disconnected
+          </div> : 
         <div className="flex space-x-2">
           {emergencySwitches?.map((emergencySwitch) => (
             <div key={emergencySwitch.id} className="flex flex-col items-center space-y-1">
@@ -52,6 +57,7 @@ export default function EmergencyAlert({ emergencySwitches }) {
             </div>
           ))}
         </div>
+        }
       </div>
     </div>
   );

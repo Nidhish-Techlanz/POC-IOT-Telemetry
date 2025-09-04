@@ -12,14 +12,14 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className=" w-64 bg-gray-950 text-gray-200 shadow-xl flex flex-col">
+    <aside className="fixed top-0 left-0 h-screen w-64 bg-gray-950 text-gray-200 shadow-xl flex flex-col">
       {/* Logo / Title */}
       <div className="px-6 py-4 text-lg font-bold tracking-wide border-b border-gray-800">
         Dashboard
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 flex flex-col p-4 space-y-2">
+      <nav className="flex-1 flex flex-col p-4 space-y-2 overflow-y-auto">
         {links.map(({ href, label, icon }) => {
           const active = pathname === href;
           return (
