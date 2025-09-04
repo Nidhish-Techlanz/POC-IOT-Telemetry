@@ -42,23 +42,23 @@ mqttClient.on('message', (topic, message) => {
 });
 
 // 🔹 New: Handle WebSocket → MQTT
-wss.on('connection', (ws) => {
-  console.log('WebSocket client connected');
+// wss.on('connection', (ws) => {
+//   console.log('WebSocket client connected');
 
-  ws.on('message', (msg) => {
-    try {
-      const data = JSON.parse(msg.toString());
-      console.log('Received from WebSocket client:', data);
-      if (data.topic && data.payload) {
-        // publish to MQTT
-        mqttClient.publish(data.topic, JSON.stringify(data.payload));
-        console.log('Published to MQTT:', data);
-      }
-    } catch (err) {
-      console.error('Invalid WebSocket message:', msg.toString());
-    }
-  });
-});
+//   ws.on('message', (msg) => {
+//     try {
+//       const data = JSON.parse(msg.toString());
+//       console.log('Received from WebSocket client:', data);
+//       if (data.topic && data.payload) {
+//         // publish to MQTT
+//         mqttClient.publish(data.topic, JSON.stringify(data.payload));
+//         console.log('Published to MQTT:', data);
+//       }
+//     } catch (err) {
+//       console.error('Invalid WebSocket message:', msg.toString());
+//     }
+//   });
+// });
 
 server.listen(8000, () => {
   console.log('Web server running at http://localhost:8000'); 

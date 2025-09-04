@@ -18,7 +18,7 @@ function Map({ latitude, longitude }) {
     if (!document.querySelector("#google-maps-script")) {
       const script = document.createElement("script");
       script.id = "google-maps-script";
-      script.src = `https://maps.gomaps.pro/maps/api/js?key=AlzaSy2PiDMlNFYTjNZHo__4YhjoWCRozlDGtqS`;
+      script.src = `https://maps.gomaps.pro/maps/api/js?key=${process.env.NEXT_PUBLIC_GOMAPS_API_KEY}`;
       script.async = true;
       script.defer = true;
       script.onload = () => setLoaded(true);
