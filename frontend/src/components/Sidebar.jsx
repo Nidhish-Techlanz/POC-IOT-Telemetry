@@ -8,7 +8,7 @@ export default function Sidebar() {
 
   const links = [
     { href: "/insights", label: "Insights", icon: <BarChart2 className="w-5 h-5" /> },
-    { href: "/config", label: "Config", icon: <Settings className="w-5 h-5" /> },
+    // { href: "/config", label: "Config", icon: <Settings className="w-5 h-5" /> },
   ];
 
   return (
