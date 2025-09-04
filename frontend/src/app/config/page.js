@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Circle, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import Sidebar from "../../components/Sidebar";
@@ -20,6 +20,25 @@ export default function GeoFenceMap() {
   // Store all zones
   const [zones, setZones] = useState([]);
 
+  const ws = useRef(null);
+
+useEffect(() => {
+  ws.current = new WebSocket("ws://localhost:8000"); 
+
+  ws.current.onopen = () => {
+    console.log("✅ Connected to WebSocket server");
+  };
+
+  ws.current.onmessage = (event) => {
+    console.log("📩 From server:", event.data);
+  };
+
+  return () => {
+    ws.current.close();
+  };
+}, []);
+
+
   const applyChanges = () => {
     const newZone = { type: shape };
 
@@ -32,6 +51,20 @@ export default function GeoFenceMap() {
     }
 
     setZones([newZone]); // 🔹 replace old zone, not append
+
+  // 🔹 Send to WebSocket server → then to MQTT
+  if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+    ws.current.send(
+      JSON.stringify({
+        topic: "flespi/message/gw/devices/6755546", // ✅ your Flespi topic
+        // topic: "flespi/message/ab/devices/6755545", // ✅ your Flespi topic
+        // topic : "my/can/yash",
+        payload: newZone,
+      })
+    );
+    console.log("📤 Sent to WebSocket:", newZone);
+  }
+
 
     // Reset inputs after adding
     if (shape === "circle") {

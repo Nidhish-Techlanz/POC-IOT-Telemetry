@@ -8,6 +8,7 @@ import EnvironmentalSensorsCard from "./EnvironmentalSensorsCard";
 import BMSFaultCard from "./BMSFaultCard"
 import CarCrashDetector from "./CarCrashDetector"
 import BmsDataCardRoute from "./BmsDataCardRoute"
+import Obd2DataCardRoute from "./Obd2DataCardRoute"
 // import ManualSwitchesCard from "./ManualSwitchesCard";
 
 import { useEffect, useRef, useState } from "react";
@@ -367,6 +368,9 @@ useEffect(() => {
     </div>
     <div>
       <BmsDataCardRoute/>
+    </div>
+    <div>
+      <Obd2DataCardRoute/>
     </div>
     <Map latitude={latitude} longitude={longitude}/>
         </main>
