@@ -321,9 +321,9 @@ useEffect(() => {
     <SmokeDetector isSmokeDetected={isSmokeDetected}/>
     </div>
     <CarCrashDetector isCrashed={isCrash} />
-    <div className="my-12">
+    {/* <div className="my-12">
       <BMSFaultCard fault={fault}/>
-    </div>
+    </div> */}
     {/* <div>
       <BmsDataCardRoute/>
     </div> */}
