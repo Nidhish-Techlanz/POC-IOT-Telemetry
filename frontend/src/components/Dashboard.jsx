@@ -193,7 +193,7 @@ useEffect(() => {
 
 
 useEffect(() => {
-  const ws = new WebSocket("ws://localhost:8000");
+  const ws = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_SERVER);
   // setLoading(true)
   ws.onmessage = function (event) {
     try {
