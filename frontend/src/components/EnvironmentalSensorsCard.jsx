@@ -6,13 +6,14 @@ export default function EnvironmentalSensorsCard({ sensorData, uplotRef }) {
     sensorData.noise != null &&
     sensorData.co2 != null &&
     sensorData.temperature != null;
+// console.log(sensorData);
 
   const noise = isConnected ? sensorData.noise.toFixed(2) : "--";
   const co2 = isConnected ? Math.round(sensorData.co2) : "--";
   const temperature = isConnected ? sensorData.temperature.toFixed(2) : "--";
 
   return (
-    <div className="bg-gray-800/70 backdrop-blur-md border py-6 border-gray-700 rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300 cursor-pointer group">
+    <div className="bg-gray-800/70 backdrop-blur-md border py-6 border-gray-700 rounded-2xl p-6  transition-all duration-300 group">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">

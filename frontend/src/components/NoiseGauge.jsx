@@ -1,10 +1,10 @@
 export default function NoiseGauge({
   value,
-  min = 20,
-  max = 120,
   label = "Noise Level",
   unit = "dB",
 }) {
+  const min = 20
+  const max = 120
   const isConnected = value != null;
 
   const clampedValue = isConnected

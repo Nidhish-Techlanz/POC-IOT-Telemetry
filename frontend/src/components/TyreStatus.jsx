@@ -65,7 +65,7 @@ function TyreStatus({ frontTyreStatus, rearTyreStatus }) {
   };
 
   return (
-    <div className="bg-gray-800/70 backdrop-blur-md border border-gray-700 rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300 cursor-pointer group">
+    <div className="bg-gray-800/70 backdrop-blur-md border border-gray-700 rounded-2xl p-6  transition-all duration-300 group">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">

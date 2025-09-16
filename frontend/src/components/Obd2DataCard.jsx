@@ -15,6 +15,7 @@ function Obd2DataCard({ obd }) {
     FuelLevel: { key: "manual.can.21", factor: 0.4, offset: 0, unit: "%" },
     VehicleDistance: { key: "manual.can.22", factor: 0.125, offset: 0, unit: "m" },
     EngineHours: { key: "manual.can.23", factor: 0.05, offset: 0, unit: "h" },
+    // ActiveDTC: { key: "manual.can.24", factor: null, offset: null, unit: null }
   };
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function Obd2DataCard({ obd }) {
   return (
     <div
       className="bg-gray-800/70 backdrop-blur-md border border-gray-700 rounded-2xl p-6 
-                 hover:scale-[1.01] transition-all duration-300"
+                  transition-all duration-300"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">

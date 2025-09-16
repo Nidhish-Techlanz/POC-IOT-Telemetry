@@ -4,7 +4,7 @@ export default function EmergencySensorsCard({ sensorData }) {
   const emergency11 = sensorData.emergencyBinary;
 
   return (
-    <div className="bg-gray-800/70 backdrop-blur-md border border-gray-700 rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300 cursor-pointer group">
+    <div className="bg-gray-800/70 backdrop-blur-md border border-gray-700 rounded-2xl p-6  transition-all duration-300  group">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center">

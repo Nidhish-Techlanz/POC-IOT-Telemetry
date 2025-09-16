@@ -9,7 +9,7 @@ function BmsDataCardRoute() {
     <div
       onClick={() => router.push("/bms-data")}
       className="bg-gray-800/70 backdrop-blur-md border border-gray-700 rounded-2xl p-6 
-                 hover:scale-[1.02] transition-all duration-300 cursor-pointer group"
+                  transition-all duration-300 group"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
